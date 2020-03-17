@@ -90,21 +90,91 @@ public class BlackjackGamestate{
         return false;
     }
     
+    /* playDealer simulates the dealer's actions. The dealer will keep hitting
+     * until the dealer's score reaches 17, after that the dealer will pass */
+    public void playDealer(){
+        int score = 0;
+        this.setCurrentPlayer(-1); // it's no one's turn
+        
+        while(score < 17){
+            System.out.println("Dealer: h");
+            
+            // draw card and calculate new value
+            this.drawDealer();
+            score = this.dealer.value();
+            this.showGamestate();
+        }
+        System.out.println(" Dealer: p");
+        this.showGamestate();
+    }
+    
+    /* showResults() shows all players' scores and determines the winners of 
+     * the round. */
+    public void showResults(){
+        System.out.println(" === Round end! Results: === \n =");
+        
+        int dealerScore = this.dealer.value();
+        int score = 0;
+        StringBuilder sb;
+        
+        // if the dealer busted, set score to -1
+        if (dealerScore > 21){ dealerScore = -1; }
+        System.out.println(" =\tDealer \tscore: " + dealerScore + "\t");
+        
+        // print every player's score
+        for (int i = 0; i < this.players.length; i++){
+            sb = new StringBuilder();
+            score = this.players[i].value();
+            
+            // if the player busted, set score to -1
+            if (score > 21){ score = -1; }
+            
+            sb.append(" =\tPlayer" + (i+1) + "\tscore: " + score + "\t");
+            
+            // Determine and print whether the player won from the dealer
+            // by comparing the scores of the player and dealer
+            if (score >= 0 && score > dealerScore){
+                // not busted and higher than dealer
+                sb.append("WIN!");
+            }
+            else if (score >= 0 && score == dealerScore){
+                // not busted but equal to dealer
+                sb.append("no win");
+            }
+            else if (score >= 0 && score < dealerScore){
+                // not busted but lower than dealer
+                sb.append("LOST!");
+            }
+            else if (score == -1){
+                // busted, automatic lose
+                sb.append("LOST!");
+            }
+            System.out.println(sb.toString());
+        }
+        System.out.println(" =\n ===");
+        
+    }
     /* showGamestate() prints the current state of the game to the terminal in
      * a clear fashion. */
     public void showGamestate(){
         // print dealer's hand
-        System.out.print("\n\tDealer \tscore: " + this.dealer.value() + "\t");
+        int dealerScore = this.dealer.value();
+        String dealerScoreString = "BUST";
+        if (dealerScore <= 21){
+            dealerScoreString = Integer.toString(dealerScore);
+        }
+        System.out.print("\n\tDealer \tscore: " + dealerScoreString + "\t");
         this.dealer.showDeck();
         
         Deck player;
         StringBuilder sb;
+        int score = 0;
         
         // print every player's hand
         for (int i = 0; i < this.players.length; i++){
             sb = new StringBuilder();
             player = this.players[i];
-            int score = player.value();
+            score = player.value();
             
             // Display score if not busted, else default to "BUST"
             String scoreDisp = "BUST";
@@ -116,7 +186,7 @@ public class BlackjackGamestate{
             if (this.currentPlayer == i){
                 sb.append("   >");
             }
-            sb.append("\tPlayer" + i + "\tscore: " + scoreDisp + "\t");
+            sb.append("\tPlayer" + (i + 1) + "\tscore: " + scoreDisp + "\t");
             System.out.print(sb.toString());
             player.showDeck();
         }

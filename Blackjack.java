@@ -87,6 +87,16 @@ class Blackjack {
         return false;
     }
     
+    public static void playEndRound(BlackjackGamestate game){
+        Scanner inputScanner = new Scanner(System.in);
+        
+        System.out.print("Dealer's turn! Press Enter to continue ");
+        inputScanner.nextLine();
+        
+        game.playDealer();
+        game.showResults();
+    }
+    
     /* playRound() plays a round of blackjack. The game keeps playing turns 
      * where all players have to make a decision on what to do with their hand.
      * the round ends when all players have busted, passed or if any quit.
@@ -102,9 +112,9 @@ class Blackjack {
             // End round if a player has chosen to quit
             if (quitNow){ return; }
         }
-        
         game.showGamestate();
-        System.out.println("Dealer's turn!");
+        
+        playEndRound(game);
     }
     
     public static void main(String[] args){
